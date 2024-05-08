@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    user: app
+    command: /app/manage.py test
+    volumes:
+      - .:/app:cached
+    environment:
+      SHELL: /bin/bash
+      IPYTHONDIR: /app/.ipython
+      HISTFILE: /app/.bash_history
+    restart: "no"

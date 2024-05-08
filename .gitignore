@@ -1,0 +1,11 @@
+*.pyc
+.idea/
+.pycharm_helpers/
+.ipython/
+dist/
+*.egg-info/
+build/
+*.sw*
+.coverage
+.bash_history
+docker-compose.override.yaml
