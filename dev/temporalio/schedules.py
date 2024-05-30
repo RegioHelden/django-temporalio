@@ -6,7 +6,7 @@ from temporalio.client import (
     ScheduleSpec,
 )
 
-from dev.temporalio import TestTaskQueues
+from dev.temporalio.queues import TestTaskQueues
 from django_temporalio.registry import schedules
 
 schedules.register(

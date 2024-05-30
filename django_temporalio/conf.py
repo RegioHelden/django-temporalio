@@ -20,7 +20,12 @@ DEFAULTS = {
     "URL": "http://localhost:7233",
     "NAMESPACE": "default",
     "WORKER_CONFIGS": {},
+    "BASE_MODULE": None,
 }
+
+
+class SettingIsNotSetError(Exception):
+    pass
 
 
 class Settings:

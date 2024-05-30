@@ -33,6 +33,7 @@ from temporalio.worker import WorkerConfig
 
 DJANGO_TEMPORALIO = {
     "URL": "localhost:7233",
+    "BASE_MODULE": "path.to.module",
     "WORKER_CONFIGS": {
         "main": WorkerConfig(
             task_queue="MAIN_TASK_QUEUE",
@@ -45,12 +46,18 @@ DJANGO_TEMPORALIO = {
 
 ## Usage
 
+Activities, workflows and schedules should be placed inside the base module defined by the `BASE_MODULE` setting, 
+preferably outside of any Django application, in order to keep the uses of 
+the [imports_passed_through](https://python.temporal.io/temporalio.workflow.unsafe.html) context manager encapsulated 
+inside the module, along with Temporal.io related code.
+
 ### Workflow and Activity Registry
 
 The registry is a singleton that holds mappings between queue names and registered activities and workflows.
 You can register activities and workflows using the `register` method. 
 
-Activities and workflows should be declared in `workflows.py` and `activities.py` modules respectively. 
+Activities and workflows should be declared in modules matching the following patterns `*workflows*.py` and 
+`*activities*.py` respectively. 
 
 ```python
 from temporalio import activity, workflow
@@ -123,3 +130,4 @@ DJANGO_TEMPORALIO: A dictionary containing the following keys:
 - NAMESPACE: The Temporal.io namespace to use, defaults to `default`
 - WORKER_CONFIGS: A dictionary containing worker configurations. 
   The key is the worker name and the value is a `WorkerConfig` instance.
+- BASE_MODULE: A python module that holds workflows, activities and schedules, defaults to `None`
