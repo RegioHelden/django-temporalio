@@ -1,6 +1,6 @@
 __title__ = "django-temporalio"
 __description__ = "Temporal.io integration for Django"
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __url__ = "https://github.com/RegioHelden/django-temporalio"
 __author__ = "RegioHelden GmbH"
 __author_email__ = "opensource@regiohelden.de"
