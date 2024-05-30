@@ -1,8 +1,10 @@
 from unittest import TestCase, mock
 
+from django.test import override_settings
 from temporalio import workflow
 
-from dev.temporalio import TestTaskQueues
+from dev.temporalio.queues import TestTaskQueues
+from django_temporalio.conf import SETTINGS_KEY
 from django_temporalio.registry import queue_workflows, autodiscover_modules
 
 
@@ -21,6 +23,7 @@ class QueueWorkflowRegistryTestCase(TestCase):
     def tearDown(self):
         queue_workflows.clear_registry()
 
+    @override_settings(**{SETTINGS_KEY: {"BASE_MODULE": "dev.temporalio"}})
     @mock.patch(
         "django_temporalio.registry.autodiscover_modules", wraps=autodiscover_modules
     )
@@ -35,13 +38,13 @@ class QueueWorkflowRegistryTestCase(TestCase):
         registry = queue_workflows.get_registry()
 
         mock_register.assert_called_once_with(TestTaskQueues.MAIN)
-        mock_autodiscover_modules.assert_called_once_with("workflows")
+        mock_autodiscover_modules.assert_called_once_with("*workflows*")
         self.assertEqual(len(registry), 1)
         self.assertIn(TestTaskQueues.MAIN, registry)
         workflows = registry[TestTaskQueues.MAIN]
         self.assertEqual(len(workflows), 1)
         self.assertEqual(
-            "dev.workflows.TestWorkflow",
+            "dev.temporalio.workflows.TestWorkflow",
             f"{workflows[0].__module__}.{workflows[0].__name__}",
         )
 

@@ -1,10 +1,12 @@
 from unittest import TestCase, mock
 
-from django.utils.module_loading import autodiscover_modules
+from django.test import override_settings
 from temporalio import activity
 
-from dev.temporalio import TestTaskQueues
+from dev.temporalio.queues import TestTaskQueues
+from django_temporalio.conf import SETTINGS_KEY
 from django_temporalio.registry import queue_activities
+from django_temporalio.utils import autodiscover_modules
 
 
 @activity.defn
@@ -20,6 +22,7 @@ class QueueActivityRegistryTestCase(TestCase):
     def tearDown(self):
         queue_activities.clear_registry()
 
+    @override_settings(**{SETTINGS_KEY: {"BASE_MODULE": "dev.temporalio"}})
     @mock.patch(
         "django_temporalio.registry.autodiscover_modules", wraps=autodiscover_modules
     )
@@ -34,14 +37,14 @@ class QueueActivityRegistryTestCase(TestCase):
         registry = queue_activities.get_registry()
 
         mock_register.assert_called_once_with(TestTaskQueues.MAIN)
-        mock_autodiscover_modules.assert_called_once_with("activities")
+        mock_autodiscover_modules.assert_called_once_with("*activities*")
         self.assertEqual(len(registry), 1)
         self.assertIn(TestTaskQueues.MAIN, registry)
         activities = registry[TestTaskQueues.MAIN]
         self.assertEqual(len(activities), 1)
         self.assertEqual(
             f"{activities[0].__module__}.{activities[0].__name__}",
-            "dev.activities.test_activity",
+            "dev.temporalio.activities.test_activity",
         )
 
     @mock.patch("django_temporalio.registry.autodiscover_modules")

@@ -2,8 +2,9 @@ from dataclasses import dataclass, field
 from functools import wraps
 from typing import Callable, Sequence, Type
 
-from django.utils.module_loading import autodiscover_modules
 from temporalio.client import Schedule
+
+from django_temporalio.utils import autodiscover_modules
 
 
 class ScheduleRegistry:
@@ -26,7 +27,7 @@ class ScheduleRegistry:
         self._registry[schedule_id] = schedule
 
     def get_registry(self):
-        autodiscover_modules("schedules")
+        autodiscover_modules("*schedules*")
         return self._registry
 
     def clear_registry(self):
@@ -85,8 +86,8 @@ class QueueRegistry:
 
 
 schedules = ScheduleRegistry()
-queue_workflows = QueueRegistry("workflows", "__temporal_workflow_definition")
-queue_activities = QueueRegistry("activities", "__temporal_activity_definition")
+queue_workflows = QueueRegistry("*workflows*", "__temporal_workflow_definition")
+queue_activities = QueueRegistry("*activities*", "__temporal_activity_definition")
 
 
 @dataclass

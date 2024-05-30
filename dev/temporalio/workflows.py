@@ -1,6 +1,6 @@
 from temporalio import workflow
 
-from dev.temporalio import TestTaskQueues
+from dev.temporalio.queues import TestTaskQueues
 from django_temporalio.registry import queue_workflows
 
 
