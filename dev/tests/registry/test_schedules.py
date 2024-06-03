@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
 
-from django.utils.module_loading import autodiscover_modules
+from django.test import override_settings
 from temporalio.client import (
     ScheduleActionStartWorkflow,
     Schedule,
@@ -9,8 +9,10 @@ from temporalio.client import (
     ScheduleRange,
 )
 
-from dev.temporalio import TestTaskQueues
+from dev.temporalio.queues import TestTaskQueues
+from django_temporalio.conf import SETTINGS_KEY
 from django_temporalio.registry import schedules
+from django_temporalio.utils import autodiscover_modules
 
 
 class ScheduleRegistryTestCase(TestCase):
@@ -41,6 +43,7 @@ class ScheduleRegistryTestCase(TestCase):
     def tearDown(self):
         schedules.clear_registry()
 
+    @override_settings(**{SETTINGS_KEY: {"BASE_MODULE": "dev.temporalio"}})
     @mock.patch(
         "django_temporalio.registry.autodiscover_modules", wraps=autodiscover_modules
     )
@@ -52,7 +55,7 @@ class ScheduleRegistryTestCase(TestCase):
         registry = schedules.get_registry()
 
         mock_register.assert_called_once()
-        mock_autodiscover_modules.assert_called_once_with("schedules")
+        mock_autodiscover_modules.assert_called_once_with("*schedules*")
         self.assertEqual(len(registry), 1)
         self.assertIn("do-cool-stuff-every-hour", registry)
 
