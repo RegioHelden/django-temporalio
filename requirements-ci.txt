@@ -1,2 +1,2 @@
-temporalio==1.5.1
-setuptools==66.1.1
+temporalio==1.6.0
+setuptools==70.3.0
