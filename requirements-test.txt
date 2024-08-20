@@ -1,4 +1,4 @@
 -r requirements-ci.txt
-Django==5.0.7
+Django==5.0.8
 bumpversion==0.6.0
 build==1.2.1
