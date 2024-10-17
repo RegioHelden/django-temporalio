@@ -1,7 +1,9 @@
 from unittest import IsolatedAsyncioTestCase, mock
 
+from django.test import override_settings
+
 from django_temporalio.client import init_client
-from django_temporalio.conf import settings
+from django_temporalio.conf import SETTINGS_KEY
 
 
 class InitClientTestCase(IsolatedAsyncioTestCase):
@@ -10,9 +12,14 @@ class InitClientTestCase(IsolatedAsyncioTestCase):
     """
 
     async def test_init_client(self):
-        with mock.patch("django_temporalio.client.Client.connect") as connect_mock:
+        settings = {
+            "CLIENT_CONFIG": {"foo": "bar"},
+        }
+
+        with (
+            mock.patch("django_temporalio.client.Client.connect") as connect_mock,
+            override_settings(**{SETTINGS_KEY: settings}),
+        ):
             await init_client()
 
-            connect_mock.assert_called_once_with(
-                target_host=settings.URL, namespace=settings.NAMESPACE
-            )
+            connect_mock.assert_called_once_with(foo="bar")

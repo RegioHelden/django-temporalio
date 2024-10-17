@@ -17,21 +17,18 @@ class SettingsTestCase(TestCase):
 
     def test_default_settings(self):
         self.assertFalse(hasattr(django_settings, SETTINGS_KEY))
-        self.assertEqual(temporalio_settings.URL, DEFAULTS["URL"])
-        self.assertEqual(temporalio_settings.NAMESPACE, DEFAULTS["NAMESPACE"])
+        self.assertEqual(temporalio_settings.CLIENT_CONFIG, DEFAULTS["CLIENT_CONFIG"])
         self.assertEqual(temporalio_settings.WORKER_CONFIGS, DEFAULTS["WORKER_CONFIGS"])
         self.assertEqual(temporalio_settings.BASE_MODULE, DEFAULTS["BASE_MODULE"])
 
     def test_user_settings(self):
         user_settings = {
-            "URL": "http://temporal:7233",
-            "NAMESPACE": "main",
+            "CLIENT_CONFIG": {"target_host": "temporal:7233"},
             "WORKER_CONFIGS": {"main": "config"},
             "BASE_MODULE": "dev.temporalio",
         }
         with override_settings(**{SETTINGS_KEY: user_settings}):
-            self.assertEqual(temporalio_settings.URL, user_settings["URL"])
-            self.assertEqual(temporalio_settings.NAMESPACE, user_settings["NAMESPACE"])
+            self.assertEqual(temporalio_settings.CLIENT_CONFIG, user_settings["CLIENT_CONFIG"])
             self.assertEqual(
                 temporalio_settings.WORKER_CONFIGS, user_settings["WORKER_CONFIGS"]
             )
@@ -41,11 +38,10 @@ class SettingsTestCase(TestCase):
 
     def test_fallback_to_defaults(self):
         user_settings = {
-            "NAMESPACE": "main",
+            "CLIENT_CONFIG": {"target_host": "temporal:7233"},
         }
         with override_settings(**{SETTINGS_KEY: user_settings}):
-            self.assertEqual(temporalio_settings.URL, DEFAULTS["URL"])
-            self.assertEqual(temporalio_settings.NAMESPACE, user_settings["NAMESPACE"])
+            self.assertEqual(temporalio_settings.CLIENT_CONFIG, user_settings["CLIENT_CONFIG"])
             self.assertEqual(
                 temporalio_settings.WORKER_CONFIGS, DEFAULTS["WORKER_CONFIGS"]
             )

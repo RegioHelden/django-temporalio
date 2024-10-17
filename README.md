@@ -32,7 +32,9 @@ Add the following settings to your `settings.py`:
 from temporalio.worker import WorkerConfig
 
 DJANGO_TEMPORALIO = {
-    "URL": "localhost:7233",
+    "CLIENT_CONFIG": {
+        "target_host": "localhost:7233",
+    },
     "BASE_MODULE": "path.to.module",
     "WORKER_CONFIGS": {
         "main": WorkerConfig(
@@ -126,8 +128,8 @@ You can configure the app using the following settings:
 
 DJANGO_TEMPORALIO: A dictionary containing the following keys:
 
-- URL: The Temporal.io host to connect to, defaults to `http://localhost:7233`
-- NAMESPACE: The Temporal.io namespace to use, defaults to `default`
+- CLIENT_CONFIG: A dictionary of kwargs that are passed to the `temporalio.client.Client.connect` 
+  method on the client initialization, defaults to `{}`
 - WORKER_CONFIGS: A dictionary containing worker configurations. 
-  The key is the worker name and the value is a `WorkerConfig` instance.
+  The key is the worker name and the value is a `temporalio.worker.WorkerConfig` instance.
 - BASE_MODULE: A python module that holds workflows, activities and schedules, defaults to `None`
