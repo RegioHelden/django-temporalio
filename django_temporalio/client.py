@@ -7,7 +7,4 @@ async def init_client():
     """
     Connect to Temporal.io server and return a client instance.
     """
-    return await Client.connect(
-        target_host=settings.URL,
-        namespace=settings.NAMESPACE,
-    )
+    return await Client.connect(**settings.CLIENT_CONFIG)

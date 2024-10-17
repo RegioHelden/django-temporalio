@@ -3,7 +3,10 @@ Settings for django-temporalio are all namespaced in the DJANGO_TEMPORALIO setti
 For example your project's `settings.py` file might look like this:
 
 DJANGO_TEMPORALIO = {
-    'URL': 'http://localhost:7233',
+    # params passed to the `temporalio.client.Client.connect' method
+    'CLIENT_CONFIG': {
+        'target_host': 'localhost:7233',
+    },
 }
 
 This module provides the `settings` object, that is used to access
@@ -17,8 +20,7 @@ from django.dispatch import receiver
 
 SETTINGS_KEY = "DJANGO_TEMPORALIO"
 DEFAULTS = {
-    "URL": "http://localhost:7233",
-    "NAMESPACE": "default",
+    "CLIENT_CONFIG": {},
     "WORKER_CONFIGS": {},
     "BASE_MODULE": None,
 }

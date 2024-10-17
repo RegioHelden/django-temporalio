@@ -13,6 +13,4 @@ class InitClientTestCase(IsolatedAsyncioTestCase):
         with mock.patch("django_temporalio.client.Client.connect") as connect_mock:
             await init_client()
 
-            connect_mock.assert_called_once_with(
-                target_host=settings.URL, namespace=settings.NAMESPACE
-            )
+            connect_mock.assert_called_once_with(**settings.CLIENT_CONFIG)
