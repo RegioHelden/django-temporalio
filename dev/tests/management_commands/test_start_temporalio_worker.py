@@ -121,9 +121,10 @@ class StartTemporalioWorkerTestCase(TestCase):
             call_command("start_temporalio_worker", "worker_3", stdout=self.stdout)
 
         self.worker_mock.assert_not_called()
-        self.assertEqual(
+        # use regex due to different error messages in different Python versions
+        self.assertRegex(
             str(cm.exception),
-            "Error: argument worker_name: invalid choice: 'worker_3' (choose from 'worker_1', 'worker_2')",
+            r"Error: argument worker_name: invalid choice: '?worker_3'? \(choose from '?worker_1'?, '?worker_2'?\)"
         )
 
     def test_no_arguments(self):
