@@ -24,7 +24,7 @@ class SyncTemporalioSchedulesTestCase(TestCase):
                     mock.Mock(id="schedule_3"),
                     mock.Mock(id="schedule_4"),
                     mock.Mock(id="schedule_5"),
-                )
+                ),
             ),
             get_schedule_handle=mock.Mock(return_value=self.schedule_handle_mock),
         )
@@ -51,7 +51,9 @@ class SyncTemporalioSchedulesTestCase(TestCase):
 
     def _test_sync_schedules(self, verbosity=0):
         call_command(
-            "sync_temporalio_schedules", verbosity=verbosity, stdout=self.stdout
+            "sync_temporalio_schedules",
+            verbosity=verbosity,
+            stdout=self.stdout,
         )
 
         self.get_registry_mock.assert_called_once_with()
@@ -66,19 +68,19 @@ class SyncTemporalioSchedulesTestCase(TestCase):
                 mock.call.get_schedule_handle("schedule_1"),
                 mock.call.get_schedule_handle("schedule_2"),
                 mock.call.create_schedule("schedule_6", "schedule_instance_6"),
-            ]
+            ],
         )
         self.schedule_handle_mock.assert_has_calls(
             [
                 mock.call.delete(),
                 mock.call.update(mock.ANY),
-            ]
+            ],
         )
 
     def test_sync_schedules(self):
         self._test_sync_schedules()
         self.assertEqual(
-            "Syncing schedules...\n" "removed 3, updated 2, created 1\n",
+            "Syncing schedules...\nremoved 3, updated 2, created 1\n",
             self.stdout.getvalue(),
         )
 
@@ -103,7 +105,7 @@ class SyncTemporalioSchedulesTestCase(TestCase):
         self.client_mock.assert_has_calls(
             [
                 mock.call.list_schedules(),
-            ]
+            ],
         )
         self.schedule_handle_mock.assert_not_called()
         self.assertEqual(

@@ -2,7 +2,7 @@ import fnmatch
 import os
 from importlib import import_module
 
-from django_temporalio.conf import settings, SettingIsNotSetError
+from django_temporalio.conf import SettingIsNotSetError, settings
 
 
 def autodiscover_modules(related_name_pattern: str):
@@ -40,6 +40,7 @@ def autodiscover_modules(related_name_pattern: str):
                 continue
 
             module_name = root.replace(base_module_path, base_module_name).replace(
-                os.sep, "."
+                os.sep,
+                ".",
             )
             import_module(f"{module_name}.{file[:-3]}")

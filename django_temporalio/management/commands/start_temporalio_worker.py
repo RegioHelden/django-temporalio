@@ -26,8 +26,8 @@ class Command(BaseCommand):
             action="store_true",
             default=False,
             help=(
-                "Start a worker per queue registered in the django-temporalio registry. "
-                "Meant for development purposes."
+                "Start a worker per queue registered in the django-temporalio registry."
+                " Meant for development purposes."
             ),
         )
 

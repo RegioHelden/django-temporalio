@@ -43,7 +43,9 @@ class Command(BaseCommand):
             if schedule_id in current_schedule_ids:
                 if not self.dry_run:
                     handle = client.get_schedule_handle(schedule_id)
-                    await handle.update(lambda _: ScheduleUpdate(schedule=schedule))
+                    await handle.update(
+                        lambda schedule=schedule: ScheduleUpdate(schedule=schedule),
+                    )
                 updated_schedule_ids.append(schedule_id)
                 self.log(f"Updated '{schedule_id}'")
             else:
@@ -55,7 +57,7 @@ class Command(BaseCommand):
         self.stdout.write(
             f"removed {len(removed_schedule_ids)}, "
             f"updated {len(updated_schedule_ids)}, "
-            f"created {len(new_schedule_ids)}"
+            f"created {len(new_schedule_ids)}",
         )
 
     def handle(self, *args, **options):

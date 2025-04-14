@@ -3,9 +3,9 @@ from unittest import TestCase, mock
 from django.test import override_settings
 from temporalio import workflow
 
-from dev.temporalio.queues import TestTaskQueues
 from django_temporalio.conf import SETTINGS_KEY
-from django_temporalio.registry import queue_workflows, autodiscover_modules
+from django_temporalio.registry import autodiscover_modules, queue_workflows
+from example.temporalio.queues import TestTaskQueues
 
 
 @workflow.defn
@@ -23,9 +23,10 @@ class QueueWorkflowRegistryTestCase(TestCase):
     def tearDown(self):
         queue_workflows.clear_registry()
 
-    @override_settings(**{SETTINGS_KEY: {"BASE_MODULE": "dev.temporalio"}})
+    @override_settings(**{SETTINGS_KEY: {"BASE_MODULE": "example.temporalio"}})
     @mock.patch(
-        "django_temporalio.registry.autodiscover_modules", wraps=autodiscover_modules
+        "django_temporalio.registry.autodiscover_modules",
+        wraps=autodiscover_modules,
     )
     @mock.patch(
         "django_temporalio.registry.queue_workflows.register",
@@ -33,7 +34,8 @@ class QueueWorkflowRegistryTestCase(TestCase):
     )
     def test_get_registry(self, mock_register, mock_autodiscover_modules):
         """
-        Test that workflows defined in workflows.py are automatically registered when the registry is accessed.
+        Test that workflows defined in workflows.py are automatically registered when
+        the registry is accessed.
         """
         registry = queue_workflows.get_registry()
 
@@ -44,7 +46,7 @@ class QueueWorkflowRegistryTestCase(TestCase):
         workflows = registry[TestTaskQueues.MAIN]
         self.assertEqual(len(workflows), 1)
         self.assertEqual(
-            "dev.temporalio.workflows.TestWorkflow",
+            "example.temporalio.workflows.TestWorkflow",
             f"{workflows[0].__module__}.{workflows[0].__name__}",
         )
 
@@ -99,9 +101,10 @@ class QueueWorkflowRegistryTestCase(TestCase):
     @mock.patch("django_temporalio.registry.autodiscover_modules")
     def test_register_failure_on_missing_temporal_decorators(self, _):
         """
-        Test that an exception is raised when a workflow class is not decorated with Temporal.io decorator.
+        Test that an exception is raised when a workflow class is not decorated with
+        Temporal.io decorator.
         """
-        with self.assertRaises(queue_workflows.MissingTemporalDecorator):
+        with self.assertRaises(queue_workflows.MissingTemporalDecoratorError):
 
             @queue_workflows.register(TestTaskQueues.MAIN)
             class TestWorkflow:

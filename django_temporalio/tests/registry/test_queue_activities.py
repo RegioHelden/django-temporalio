@@ -3,10 +3,10 @@ from unittest import TestCase, mock
 from django.test import override_settings
 from temporalio import activity
 
-from dev.temporalio.queues import TestTaskQueues
 from django_temporalio.conf import SETTINGS_KEY
 from django_temporalio.registry import queue_activities
 from django_temporalio.utils import autodiscover_modules
+from example.temporalio.queues import TestTaskQueues
 
 
 @activity.defn
@@ -22,9 +22,10 @@ class QueueActivityRegistryTestCase(TestCase):
     def tearDown(self):
         queue_activities.clear_registry()
 
-    @override_settings(**{SETTINGS_KEY: {"BASE_MODULE": "dev.temporalio"}})
+    @override_settings(**{SETTINGS_KEY: {"BASE_MODULE": "example.temporalio"}})
     @mock.patch(
-        "django_temporalio.registry.autodiscover_modules", wraps=autodiscover_modules
+        "django_temporalio.registry.autodiscover_modules",
+        wraps=autodiscover_modules,
     )
     @mock.patch(
         "django_temporalio.registry.queue_activities.register",
@@ -32,7 +33,8 @@ class QueueActivityRegistryTestCase(TestCase):
     )
     def test_get_registry(self, mock_register, mock_autodiscover_modules):
         """
-        Test that activities defined in activities.py are automatically registered when the registry is accessed.
+        Test that activities defined in activities.py are automatically registered when
+        the registry is accessed.
         """
         registry = queue_activities.get_registry()
 
@@ -44,7 +46,7 @@ class QueueActivityRegistryTestCase(TestCase):
         self.assertEqual(len(activities), 1)
         self.assertEqual(
             f"{activities[0].__module__}.{activities[0].__name__}",
-            "dev.temporalio.activities.test_activity",
+            "example.temporalio.activities.test_activity",
         )
 
     @mock.patch("django_temporalio.registry.autodiscover_modules")
@@ -98,9 +100,10 @@ class QueueActivityRegistryTestCase(TestCase):
     @mock.patch("django_temporalio.registry.autodiscover_modules")
     def test_register_failure_on_missing_temporal_decorators(self, _):
         """
-        Test that an exception is raised when an activity function is not decorated with Temporal.io decorator.
+        Test that an exception is raised when an activity function is not decorated with
+        Temporal.io decorator.
         """
-        with self.assertRaises(queue_activities.MissingTemporalDecorator):
+        with self.assertRaises(queue_activities.MissingTemporalDecoratorError):
 
             @queue_activities.register(TestTaskQueues.MAIN)
             def test_activity():

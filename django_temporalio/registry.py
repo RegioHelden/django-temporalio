@@ -1,6 +1,6 @@
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from functools import wraps
-from typing import Callable, Sequence, Type
 
 from temporalio.client import Schedule
 
@@ -10,7 +10,7 @@ from django_temporalio.utils import autodiscover_modules
 class ScheduleRegistry:
     _registry: dict[str, Schedule]
 
-    class AlreadyRegistered(Exception):
+    class AlreadyRegisteredError(Exception):
         pass
 
     def __init__(self):
@@ -21,7 +21,7 @@ class ScheduleRegistry:
 
     def register(self, schedule_id: str, schedule: Schedule):
         if schedule_id in self._registry:
-            raise self.AlreadyRegistered(
+            raise self.AlreadyRegisteredError(
                 f"Schedule with ID '{schedule_id}' is already registered.",
             )
         self._registry[schedule_id] = schedule
@@ -40,7 +40,7 @@ class QueueRegistry:
     _registry: dict[str, list]
     _registered_object_ids: set
 
-    class MissingTemporalDecorator(Exception):
+    class MissingTemporalDecoratorError(Exception):
         pass
 
     def __init__(self, module_name: str, check_attr: str):
@@ -63,9 +63,10 @@ class QueueRegistry:
         @wraps(*queue_names)
         def decorator(obj):
             if not hasattr(obj, self.check_attr):
-                raise self.MissingTemporalDecorator(
-                    f"'{self._make_id(obj)}' must be decorated with 'defn' Temporal.io decorator.\n"
-                    f"See https://github.com/temporalio/sdk-python/blob/main/README.md",
+                raise self.MissingTemporalDecoratorError(
+                    f"'{self._make_id(obj)}' must be decorated with 'defn' Temporal.io"
+                    "decorator.\n"
+                    "See https://github.com/temporalio/sdk-python/blob/main/README.md",
                 )
 
             if (obj_id := self._make_id(obj)) not in self._registered_object_ids:
@@ -92,7 +93,7 @@ queue_activities = QueueRegistry("*activities*", "__temporal_activity_definition
 
 @dataclass
 class QueueRegistryItem:
-    workflows: Sequence[Type] = field(default_factory=list)
+    workflows: Sequence[type] = field(default_factory=list)
     activities: Sequence[Callable] = field(default_factory=list)
 
 

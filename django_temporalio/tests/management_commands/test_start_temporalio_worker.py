@@ -1,7 +1,7 @@
 from io import StringIO
 from unittest import TestCase, mock
 
-from django.core.management import call_command, CommandError
+from django.core.management import CommandError, call_command
 from django.test import override_settings
 from temporalio.worker import WorkerConfig
 
@@ -25,7 +25,7 @@ class StartTemporalioWorkerTestCase(TestCase):
         }
 
         cls._overridden_context = override_settings(
-            **{SETTINGS_KEY: {"WORKER_CONFIGS": worker_configs}}
+            **{SETTINGS_KEY: {"WORKER_CONFIGS": worker_configs}},
         )
         cls._overridden_context.enable()
         cls.addClassCleanup(cls._overridden_context.disable)
@@ -51,10 +51,12 @@ class StartTemporalioWorkerTestCase(TestCase):
             "django_temporalio.management.commands.start_temporalio_worker.get_queue_registry",
             return_value={
                 "TEST_QUEUE_1": mock.MagicMock(
-                    workflows=["workflow_1"], activities=["activity_1"]
+                    workflows=["workflow_1"],
+                    activities=["activity_1"],
                 ),
                 "TEST_QUEUE_2": mock.MagicMock(
-                    workflows=["workflow_2"], activities=["activity_2"]
+                    workflows=["workflow_2"],
+                    activities=["activity_2"],
                 ),
             },
         )
@@ -124,7 +126,8 @@ class StartTemporalioWorkerTestCase(TestCase):
         # use regex due to different error messages in different Python versions
         self.assertRegex(
             str(cm.exception),
-            r"Error: argument worker_name: invalid choice: '?worker_3'? \(choose from '?worker_1'?, '?worker_2'?\)"
+            r"Error: argument worker_name: invalid choice: '?worker_3'? "
+            r"\(choose from '?worker_1'?, '?worker_2'?\)",
         )
 
     def test_no_arguments(self):
