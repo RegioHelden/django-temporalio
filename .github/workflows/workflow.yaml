@@ -1,12 +1,31 @@
 name: Test
 
 on:
-  - push
-  - pull_request
+  # code pushed to pull request branch
+  push:
+    branches-ignore:
+      - main
+  # when draft state is removed (needed as automatically created PRs are not triggering this action)
+  pull_request:
+    types: [ready_for_review]
 
 jobs:
+  # lint code for errors
+  # see https://github.com/RegioHelden/github-reusable-workflows/blob/main/.github/workflows/python-ruff.yaml
+  lint:
+    name: Lint
+    permissions:
+      contents: read
+    uses: RegioHelden/github-reusable-workflows/.github/workflows/python-ruff.yaml@main
+    with:
+      ruff-version: "0.11.5"
+      python-version: "3.12"
+
   test:
-    runs-on: ubuntu-latest
+    name: Test
+    needs:
+      - lint
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
@@ -27,47 +46,25 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Update pip
-        run: python -m pip install --upgrade pip
-
-      - name: Install Django ${{ matrix.django }}
-        run: pip install "Django~=${{ matrix.django }}"
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
 
       - name: Install requirements
-        run: pip install -r requirements-ci.txt
+        run: uv pip install --system -r requirements-ci.txt
+
+      - name: Install Django ${{ matrix.django }}
+        run: uv pip install --system "Django~=${{ matrix.django }}"
 
       - name: Install package
-        run: pip install -e .
+        run: uv pip install --system -e .
 
       - name: Run tests
         run: python manage.py test
-
-  publish:
-    name: Build and publish Python 🐍 distributions 📦 to PyPI
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.12
-
-      - name: Install req packages
-        run: python -m pip install -U setuptools wheel
-
-      - name: Build a binary wheel and a source tarball
-        run: python setup.py sdist bdist_wheel
-
-      - name: Publish Package on PyPI
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@release/v1.8
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}

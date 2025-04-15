@@ -6,8 +6,8 @@ from temporalio.client import (
     ScheduleSpec,
 )
 
-from dev.temporalio.queues import TestTaskQueues
 from django_temporalio.registry import schedules
+from example.temporalio.queues import TestTaskQueues
 
 schedules.register(
     "do-cool-stuff-every-hour",

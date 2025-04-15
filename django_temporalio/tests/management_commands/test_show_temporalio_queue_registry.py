@@ -21,10 +21,13 @@ class ShowTemporalioQueueRegistryTestCase(TestCase):
             ),
         }
 
-        with mock.patch(
-            "django_temporalio.management.commands.show_temporalio_queue_registry.get_queue_registry",
-            return_value=registry,
-        ) as get_queue_registry_mock, StringIO() as stdout:
+        with (
+            mock.patch(
+                "django_temporalio.management.commands.show_temporalio_queue_registry.get_queue_registry",
+                return_value=registry,
+            ) as get_queue_registry_mock,
+            StringIO() as stdout,
+        ):
             call_command("show_temporalio_queue_registry", stdout=stdout)
 
             get_queue_registry_mock.assert_called_once_with()

@@ -2,17 +2,17 @@ from unittest import TestCase, mock
 
 from django.test import override_settings
 from temporalio.client import (
-    ScheduleActionStartWorkflow,
     Schedule,
-    ScheduleSpec,
+    ScheduleActionStartWorkflow,
     ScheduleCalendarSpec,
     ScheduleRange,
+    ScheduleSpec,
 )
 
-from dev.temporalio.queues import TestTaskQueues
 from django_temporalio.conf import SETTINGS_KEY
 from django_temporalio.registry import schedules
 from django_temporalio.utils import autodiscover_modules
+from example.temporalio.queues import TestTaskQueues
 
 
 class ScheduleRegistryTestCase(TestCase):
@@ -43,14 +43,16 @@ class ScheduleRegistryTestCase(TestCase):
     def tearDown(self):
         schedules.clear_registry()
 
-    @override_settings(**{SETTINGS_KEY: {"BASE_MODULE": "dev.temporalio"}})
+    @override_settings(**{SETTINGS_KEY: {"BASE_MODULE": "example.temporalio"}})
     @mock.patch(
-        "django_temporalio.registry.autodiscover_modules", wraps=autodiscover_modules
+        "django_temporalio.registry.autodiscover_modules",
+        wraps=autodiscover_modules,
     )
     @mock.patch.object(schedules, "register", wraps=schedules.register)
     def test_get_registry(self, mock_register, mock_autodiscover_modules):
         """
-        Test that schedules defined in schedules.py are automatically registered when the registry is accessed.
+        Test that schedules defined in schedules.py are automatically registered when
+        the registry is accessed.
         """
         registry = schedules.get_registry()
 
@@ -72,11 +74,12 @@ class ScheduleRegistryTestCase(TestCase):
 
     def test_already_registered_exception(self):
         """
-        Test that an exception is raised when attempting to register a schedule with the same ID.
+        Test that an exception is raised when attempting to register a schedule with
+        the same ID.
         """
         schedules.register(self.schedule_id, self.schedule)
 
-        with self.assertRaises(schedules.AlreadyRegistered):
+        with self.assertRaises(schedules.AlreadyRegisteredError):
             schedules.register(self.schedule_id, self.schedule)
 
     @mock.patch("django_temporalio.registry.autodiscover_modules")

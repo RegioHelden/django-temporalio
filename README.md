@@ -133,3 +133,8 @@ DJANGO_TEMPORALIO: A dictionary containing the following keys:
 - WORKER_CONFIGS: A dictionary containing worker configurations. 
   The key is the worker name and the value is a `temporalio.worker.WorkerConfig` instance.
 - BASE_MODULE: A python module that holds workflows, activities and schedules, defaults to `None`
+
+## Making a new release
+
+This project makes use of [RegioHelden's reusable GitHub workflows](https://github.com/RegioHelden/github-reusable-workflows). \
+Make a new release by manually triggering the `Open release PR` workflow.

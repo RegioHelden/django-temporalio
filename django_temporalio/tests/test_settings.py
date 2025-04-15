@@ -4,8 +4,10 @@ from django.conf import settings as django_settings
 from django.test.utils import override_settings
 
 from django_temporalio.conf import (
-    SETTINGS_KEY,
     DEFAULTS,
+    SETTINGS_KEY,
+)
+from django_temporalio.conf import (
     settings as temporalio_settings,
 )
 
@@ -25,15 +27,20 @@ class SettingsTestCase(TestCase):
         user_settings = {
             "CLIENT_CONFIG": {"target_host": "temporal:7233"},
             "WORKER_CONFIGS": {"main": "config"},
-            "BASE_MODULE": "dev.temporalio",
+            "BASE_MODULE": "example.temporalio",
         }
         with override_settings(**{SETTINGS_KEY: user_settings}):
-            self.assertEqual(temporalio_settings.CLIENT_CONFIG, user_settings["CLIENT_CONFIG"])
             self.assertEqual(
-                temporalio_settings.WORKER_CONFIGS, user_settings["WORKER_CONFIGS"]
+                temporalio_settings.CLIENT_CONFIG,
+                user_settings["CLIENT_CONFIG"],
             )
             self.assertEqual(
-                temporalio_settings.BASE_MODULE, user_settings["BASE_MODULE"]
+                temporalio_settings.WORKER_CONFIGS,
+                user_settings["WORKER_CONFIGS"],
+            )
+            self.assertEqual(
+                temporalio_settings.BASE_MODULE,
+                user_settings["BASE_MODULE"],
             )
 
     def test_fallback_to_defaults(self):
@@ -41,12 +48,16 @@ class SettingsTestCase(TestCase):
             "CLIENT_CONFIG": {"target_host": "temporal:7233"},
         }
         with override_settings(**{SETTINGS_KEY: user_settings}):
-            self.assertEqual(temporalio_settings.CLIENT_CONFIG, user_settings["CLIENT_CONFIG"])
             self.assertEqual(
-                temporalio_settings.WORKER_CONFIGS, DEFAULTS["WORKER_CONFIGS"]
+                temporalio_settings.CLIENT_CONFIG,
+                user_settings["CLIENT_CONFIG"],
+            )
+            self.assertEqual(
+                temporalio_settings.WORKER_CONFIGS,
+                DEFAULTS["WORKER_CONFIGS"],
             )
             self.assertEqual(temporalio_settings.BASE_MODULE, DEFAULTS["BASE_MODULE"])
 
     def test_invalid_setting(self):
         with self.assertRaises(AttributeError):
-            temporalio_settings.SOMETHING
+            temporalio_settings.SOMETHING  # noqa: B018
