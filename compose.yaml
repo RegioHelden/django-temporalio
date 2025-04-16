@@ -1,13 +1,15 @@
+---
 services:
   app:
     build: .
     user: app
-    command: /app/example/manage.py test
+    entrypoint: /app/manage.py
+    command: test
     volumes:
       - .:/app:cached
     environment:
       SHELL: /bin/bash
       IPYTHONDIR: /app/.ipython
       HISTFILE: /app/.bash_history
-      PYTHONPATH: /app  # make django_temporalio available without installation
+      PYTHONPATH: /app  # make app available without installation
     restart: "no"

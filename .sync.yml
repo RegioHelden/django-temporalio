@@ -1,0 +1,7 @@
+---
+:global:
+  module_rootname: "django_temporalio"
+  module_description: "Temporal.io integration for Django"
+  module_keywords: ["django", "temporal", "temporalio", "temporal.io"]
+  dependencies: ["django>=4.2,<6.0", "temporalio>=1.6.0"]
+  max_line_length: 88
