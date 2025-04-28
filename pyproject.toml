@@ -49,12 +49,10 @@ path = "version"
 pattern = "(?P<version>.+)"
 
 [tool.hatch.build.targets.wheel]
-packages = ["django_temporalio"]
-include = ["LICENSE", "README.md", "CHANGELOG.md"]
+include = ["LICENSE", "README.md", "CHANGELOG.md", "django_temporalio/*"]
 
 [tool.hatch.build.targets.sdist]
-packages = ["django_temporalio"]
-include = ["LICENSE", "README.md", "CHANGELOG.md"]
+include = ["LICENSE", "README.md", "CHANGELOG.md", "django_temporalio/*"]
 
 [tool.ruff]
 exclude = [
