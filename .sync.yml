@@ -5,3 +5,4 @@
   module_keywords: ["django", "temporal", "temporalio", "temporal.io"]
   dependencies: ["django>=4.2,<6.0", "temporalio>=1.6.0"]
   max_line_length: 88
+  changelog_since_tag: "v1.2.0"
