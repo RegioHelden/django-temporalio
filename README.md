@@ -90,6 +90,29 @@ from temporalio.client import Schedule
 schedules.register("do-cool-stuff-every-hour", Schedule(...))
 ```
 
+### Heartbeat
+Good practice for long-running activities is setting up a `heartbeat_timeout` and calling heartbeat periodically to make sure the activity is still alive.
+This can be achieved by setting up providing `heartbeat_timeout` when starting the activity and calling `activity.heartbeat()` directly inside your core logic e.g. on each iteration.
+If you encountered a use case where this approach does not fit your design, you can use `heartbeat` contextmanager. It creates a background task utilizing asyncio and calls the heartbeat with defined intervals.
+
+```python
+from django_temporalio.utils import heartbeat
+
+
+@queue_activities.register("MAIN_TASK_QUEUE")
+@activity.defn
+async def long_running_activity():
+    async with heartbeat(timedelta(seconds=10)):
+        await count_sheeps()
+
+
+await workflow.execute_activity(
+    long_running_activity,
+    start_to_close_timeout=timedelta(minutes=20),
+    heartbeat_timeout=timedelta(seconds=30),
+)
+```
+
 ### Management Commands
 
 To see a queue's registered activities and workflows:

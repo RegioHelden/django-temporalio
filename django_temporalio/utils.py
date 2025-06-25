@@ -1,6 +1,11 @@
+import asyncio
 import fnmatch
 import os
+from contextlib import asynccontextmanager
+from datetime import timedelta
 from importlib import import_module
+
+from temporalio import activity
 
 from django_temporalio.conf import SettingIsNotSetError, settings
 
@@ -44,3 +49,19 @@ def autodiscover_modules(related_name_pattern: str):
                 ".",
             )
             import_module(f"{module_name}.{file[:-3]}")
+
+
+@asynccontextmanager
+async def heartbeat(interval: timedelta):
+    stop = asyncio.Event()
+
+    async def _heartbeat_loop():
+        while not stop.is_set():
+            activity.heartbeat()
+            await asyncio.sleep(interval.seconds)
+
+    try:
+        yield
+    finally:
+        stop.set()
+        await asyncio.create_task(_heartbeat_loop())
