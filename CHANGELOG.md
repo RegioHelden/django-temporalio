@@ -1,5 +1,20 @@
 # Changelog
 
+## [v1.3.1](https://github.com/RegioHelden/django-temporalio/tree/v1.3.1) (2025-07-03)
+
+[Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v1.3.0...v1.3.1)
+
+**Fixed bugs:**
+
+- fix: sync_temporalio_schedules management command is working properly now. Use proper variables in `lambda` passed to the `schedule_handle.update()`. [\#46](https://github.com/RegioHelden/django-temporalio/pull/46) (@krayevidi)
+
+**Merged pull requests:**
+
+- Update uv to 0.7.19 [\#45](https://github.com/RegioHelden/django-temporalio/pull/45) (@regiohelden-dev)
+- Update uv to 0.7.18 [\#44](https://github.com/RegioHelden/django-temporalio/pull/44) (@regiohelden-dev)
+- Update uv to 0.7.17 [\#43](https://github.com/RegioHelden/django-temporalio/pull/43) (@regiohelden-dev)
+- Update uv to 0.7.15 [\#42](https://github.com/RegioHelden/django-temporalio/pull/42) (@regiohelden-dev)
+
 ## [v1.3.0](https://github.com/RegioHelden/django-temporalio/tree/v1.3.0) (2025-06-25)
 
 [Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v1.2.0...v1.3.0)
