@@ -6,7 +6,7 @@
 
 **Fixed bugs:**
 
-- fix: pass proper update object [\#46](https://github.com/RegioHelden/django-temporalio/pull/46) (@krayevidi)
+- fix: sync_temporalio_schedules management command is working properly now. Use proper variables in `lambda` passed to the `schedule_handle.update()`. [\#46](https://github.com/RegioHelden/django-temporalio/pull/46) (@krayevidi)
 
 **Merged pull requests:**
 
