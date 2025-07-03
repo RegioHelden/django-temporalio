@@ -45,7 +45,7 @@ class Command(BaseCommand):
                     handle = client.get_schedule_handle(schedule_id)
                     await handle.update(
                         # we ignore schedule input `_`, instead we use the updated
-                        lambda _: ScheduleUpdate(schedule=schedule), # noqa: B023
+                        lambda _: ScheduleUpdate(schedule=schedule),  # noqa: B023
                     )
                 updated_schedule_ids.append(schedule_id)
                 self.log(f"Updated '{schedule_id}'")
