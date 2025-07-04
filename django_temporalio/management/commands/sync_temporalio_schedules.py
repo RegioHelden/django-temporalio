@@ -1,7 +1,8 @@
 import asyncio
+from functools import partial
 
 from django.core.management.base import BaseCommand
-from temporalio.client import ScheduleUpdate
+from temporalio.client import Schedule, ScheduleUpdate
 
 from django_temporalio.client import init_client
 from django_temporalio.registry import schedules
@@ -43,10 +44,8 @@ class Command(BaseCommand):
             if schedule_id in current_schedule_ids:
                 if not self.dry_run:
                     handle = client.get_schedule_handle(schedule_id)
-                    await handle.update(
-                        # we ignore schedule input `_`, instead we use the updated
-                        lambda _: ScheduleUpdate(schedule=schedule),  # noqa: B023
-                    )
+                    updater_fn = partial(self._schedule_updater_fn, schedule)
+                    await handle.update(updater_fn)
                 updated_schedule_ids.append(schedule_id)
                 self.log(f"Updated '{schedule_id}'")
             else:
@@ -60,6 +59,10 @@ class Command(BaseCommand):
             f"updated {len(updated_schedule_ids)}, "
             f"created {len(new_schedule_ids)}",
         )
+
+    @staticmethod
+    def _schedule_updater_fn(schedule: Schedule, _schedule_input) -> ScheduleUpdate:
+        return ScheduleUpdate(schedule=schedule)
 
     def handle(self, *args, **options):
         self.verbose = int(options["verbosity"]) > 1

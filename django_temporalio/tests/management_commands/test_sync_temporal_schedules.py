@@ -2,6 +2,9 @@ from io import StringIO
 from unittest import TestCase, mock
 
 from django.core.management import call_command
+from temporalio.client import ScheduleUpdate
+
+from django_temporalio.management.commands.sync_temporalio_schedules import Command
 
 
 async def async_iterable(*items):
@@ -46,6 +49,12 @@ class SyncTemporalioSchedulesTestCase(TestCase):
         self.get_registry_mock = get_registry_patcher.start()
         self.addCleanup(get_registry_patcher.stop)
 
+        partial_patcher = mock.patch(
+            "django_temporalio.management.commands.sync_temporalio_schedules.partial",
+        )
+        self.partial_mock = partial_patcher.start()
+        self.addCleanup(partial_patcher.stop)
+
         self.stdout = StringIO()
         self.addCleanup(self.stdout.close)
 
@@ -57,7 +66,8 @@ class SyncTemporalioSchedulesTestCase(TestCase):
         )
 
         self.get_registry_mock.assert_called_once_with()
-        self.client_mock.assert_has_calls(
+        self.assertListEqual(
+            self.client_mock.mock_calls,
             [
                 mock.call.list_schedules(),
                 # get handle to initiate delete
@@ -70,10 +80,22 @@ class SyncTemporalioSchedulesTestCase(TestCase):
                 mock.call.create_schedule("schedule_6", "schedule_instance_6"),
             ],
         )
-        self.schedule_handle_mock.assert_has_calls(
+        self.assertListEqual(
+            self.partial_mock.mock_calls,
+            [
+                mock.call(Command._schedule_updater_fn, "schedule_instance_1"),
+                mock.call(Command._schedule_updater_fn, "schedule_instance_2"),
+            ],
+        )
+        updater_fn = self.partial_mock.return_value
+        self.assertListEqual(
+            self.schedule_handle_mock.mock_calls,
             [
                 mock.call.delete(),
-                mock.call.update(mock.ANY),
+                mock.call.delete(),
+                mock.call.delete(),
+                mock.call.update(updater_fn),
+                mock.call.update(updater_fn),
             ],
         )
 
@@ -102,7 +124,8 @@ class SyncTemporalioSchedulesTestCase(TestCase):
         call_command("sync_temporalio_schedules", dry_run=True, stdout=self.stdout)
 
         self.get_registry_mock.assert_called_once_with()
-        self.client_mock.assert_has_calls(
+        self.assertListEqual(
+            self.client_mock.mock_calls,
             [
                 mock.call.list_schedules(),
             ],
@@ -119,3 +142,11 @@ class SyncTemporalioSchedulesTestCase(TestCase):
             "Created 'schedule_6'\n"
             "removed 3, updated 2, created 1\n",
         )
+
+    def test_schedule_updater_fn(self):
+        schedule = "schedule_instance"
+
+        result = Command._schedule_updater_fn(schedule, "ignored_arg")
+
+        self.assertIsInstance(result, ScheduleUpdate)
+        self.assertIs(result.schedule, schedule)
