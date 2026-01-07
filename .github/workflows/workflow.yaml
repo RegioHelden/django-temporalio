@@ -21,15 +21,18 @@ jobs:
           - "3.11"
           - "3.12"
           - "3.13"
+          - "3.14"
         django:
           - "4.2"
-          - "5.0"
-          - "5.1"
+          - "5.2"
+          - "6.0"
         exclude:
           - python-version: "3.13"
             django: "4.2"
-          - python-version: "3.13"
-            django: "5.0"
+          - python-version: "3.14"
+            django: "4.2"
+          - python-version: "3.11"
+            django: "6.0"
 
     steps:
       - uses: actions/checkout@v6
