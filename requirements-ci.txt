@@ -1,1 +1,1 @@
-temporalio==1.24.0
+temporalio==1.25.0
