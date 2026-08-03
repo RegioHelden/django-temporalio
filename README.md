@@ -65,10 +65,12 @@ Activities and workflows should be declared in modules matching the following pa
 from temporalio import activity, workflow
 from django_temporalio.registry import queue_activities, queue_workflows
 
+
 @queue_activities.register("HIGH_PRIORITY_TASK_QUEUE", "MAIN_TASK_QUEUE")
 @activity.defn
 def my_activity():
     pass
+
 
 @queue_workflows.register("HIGH_PRIORITY_TASK_QUEUE", "MAIN_TASK_QUEUE")
 @workflow.defn
