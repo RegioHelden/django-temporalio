@@ -1,5 +1,17 @@
 # Changelog
 
+## [v3.0.0](https://github.com/RegioHelden/django-temporalio/tree/v3.0.0) (2026-08-13)
+
+[Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v2.1.0...v3.0.0)
+
+**Breaking changes:**
+
+- feat: support worker interceptors [\#179](https://github.com/RegioHelden/django-temporalio/pull/179) (@bodja)
+
+**Merged pull requests:**
+
+- Updates from modulesync [\#180](https://github.com/RegioHelden/django-temporalio/pull/180) (@regiohelden-dev)
+
 ## [v2.1.0](https://github.com/RegioHelden/django-temporalio/tree/v2.1.0) (2026-08-12)
 
 [Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v2.0.0...v2.1.0)
