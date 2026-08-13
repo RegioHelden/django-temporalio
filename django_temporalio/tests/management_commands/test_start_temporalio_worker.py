@@ -6,6 +6,7 @@ from django.test import override_settings
 from temporalio.worker import WorkerConfig
 
 from django_temporalio.conf import SETTINGS_KEY
+from django_temporalio.logs.interceptors import ActivityFailureLoggingInterceptor
 
 
 class StartTemporalioWorkerTestCase(TestCase):
@@ -79,12 +80,14 @@ class StartTemporalioWorkerTestCase(TestCase):
                     task_queue="TEST_QUEUE_1",
                     workflows=["workflow_1"],
                     activities=["activity_1"],
+                    interceptors=[],
                 ),
                 mock.call(
                     self.client_mock,
                     task_queue="TEST_QUEUE_2",
                     workflows=["workflow_2"],
                     activities=["activity_2"],
+                    interceptors=[],
                 ),
             ],
             any_order=True,
@@ -107,12 +110,64 @@ class StartTemporalioWorkerTestCase(TestCase):
             task_queue="TEST_QUEUE_1",
             workflows=["workflow_1"],
             activities=["activity_1"],
+            interceptors=[],
         )
         self.worker_run_mock.assert_called_once()
         self.assertEqual(
             self.stdout.getvalue(),
             "Starting 'worker_1' worker for 'TEST_QUEUE_1' queue\n"
             "(press ctrl-c to stop)...\n",
+        )
+
+    def test_interceptors_from_settings(self):
+        """
+        Test that workers are started with the interceptors
+        declared in the INTERCEPTORS setting.
+        """
+        user_settings = {
+            "WORKER_CONFIGS": {"worker_1": WorkerConfig(task_queue="TEST_QUEUE_1")},
+            "INTERCEPTORS": (
+                "django_temporalio.logs.ActivityFailureLoggingInterceptor",
+            ),
+        }
+
+        with override_settings(**{SETTINGS_KEY: user_settings}):
+            call_command("start_temporalio_worker", "worker_1", stdout=self.stdout)
+
+        interceptors = self.worker_mock.call_args.kwargs["interceptors"]
+        self.assertEqual(len(interceptors), 1)
+        self.assertIsInstance(interceptors[0], ActivityFailureLoggingInterceptor)
+
+    def test_worker_config_interceptors_are_merged(self):
+        """
+        Test that interceptors from the worker config are appended
+        to the ones declared in the INTERCEPTORS setting.
+        """
+        custom_interceptor = mock.Mock()
+        worker_configs: dict[str, WorkerConfig] = {
+            "worker_1": WorkerConfig(
+                task_queue="TEST_QUEUE_1",
+                interceptors=[custom_interceptor],
+            ),
+        }
+        user_settings = {
+            "WORKER_CONFIGS": worker_configs,
+            "INTERCEPTORS": (
+                "django_temporalio.logs.ActivityFailureLoggingInterceptor",
+            ),
+        }
+
+        with override_settings(**{SETTINGS_KEY: user_settings}):
+            call_command("start_temporalio_worker", "worker_1", stdout=self.stdout)
+
+        interceptors = self.worker_mock.call_args.kwargs["interceptors"]
+        self.assertEqual(len(interceptors), 2)
+        self.assertIsInstance(interceptors[0], ActivityFailureLoggingInterceptor)
+        self.assertIs(interceptors[1], custom_interceptor)
+        # the worker config in the settings must not be mutated
+        self.assertEqual(
+            worker_configs["worker_1"]["interceptors"],
+            [custom_interceptor],
         )
 
     def test_start_invalid_worker(self):

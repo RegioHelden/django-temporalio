@@ -22,6 +22,15 @@ class SettingsTestCase(TestCase):
         self.assertEqual(temporalio_settings.CLIENT_CONFIG, DEFAULTS["CLIENT_CONFIG"])
         self.assertEqual(temporalio_settings.WORKER_CONFIGS, DEFAULTS["WORKER_CONFIGS"])
         self.assertEqual(temporalio_settings.BASE_MODULE, DEFAULTS["BASE_MODULE"])
+        self.assertEqual(temporalio_settings.INTERCEPTORS, DEFAULTS["INTERCEPTORS"])
+        self.assertEqual(
+            temporalio_settings.ACTIVITY_FAILURE_LOG_ATTEMPTS,
+            DEFAULTS["ACTIVITY_FAILURE_LOG_ATTEMPTS"],
+        )
+        self.assertEqual(
+            temporalio_settings.ACTIVITY_FAILURE_LOG_EVERY,
+            DEFAULTS["ACTIVITY_FAILURE_LOG_EVERY"],
+        )
 
     def test_user_settings(self):
         user_settings = {
