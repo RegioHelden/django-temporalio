@@ -218,6 +218,15 @@ To start a worker for development (starts a worker for each registered queue, WO
 $ ./manage.py start_temporalio_worker --all
 ```
 
+The first SIGINT/SIGTERM triggers a graceful shutdown: the worker stops polling and waits for running
+tasks to finish; a second signal stops immediately. Running activities are cancelled after the worker's
+`graceful_shutdown_timeout` (0 by default), so set it for long-running activities - and make sure the
+process manager's stop timeout exceeds it, or its SIGKILL cuts the shutdown short.
+
+Workers are built and run by `django_temporalio.worker.WorkerRunner` - the command is only a CLI shim.
+To customise the behaviour, subclass `WorkerRunner` and point the `WORKER_RUNNER` setting (a dotted
+path) at your class.
+
 To sync schedules with Temporal.io:
 
 ```bash
@@ -243,6 +252,8 @@ DJANGO_TEMPORALIO: A dictionary containing the following keys:
 - BASE_MODULE: A python module that holds workflows, activities and schedules, defaults to `None`
 - INTERCEPTORS: A list of import strings of `temporalio.worker.Interceptor` classes workers are 
   started with, defaults to `()`
+- WORKER_RUNNER: Import string of the `WorkerRunner` subclass used to build and run workers and handle 
+  shutdown, defaults to `"django_temporalio.worker.WorkerRunner"`
 - ACTIVITY_FAILURE_LOG_ATTEMPTS: Attempt numbers on which an activity failure is logged, 
   defaults to `(1, 10, 100, 1000)`
 - ACTIVITY_FAILURE_LOG_EVERY: After the attempts above, log every Nth attempt, 
