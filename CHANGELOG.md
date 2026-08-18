@@ -1,5 +1,13 @@
 # Changelog
 
+## [v3.1.0](https://github.com/RegioHelden/django-temporalio/tree/v3.1.0) (2026-08-18)
+
+[Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v3.0.0...v3.1.0)
+
+**Implemented enhancements:**
+
+- feat: add graceful worker shutdown [\#182](https://github.com/RegioHelden/django-temporalio/pull/182) (@bodja)
+
 ## [v3.0.0](https://github.com/RegioHelden/django-temporalio/tree/v3.0.0) (2026-08-13)
 
 [Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v2.1.0...v3.0.0)
