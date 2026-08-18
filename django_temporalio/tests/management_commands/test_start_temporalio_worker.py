@@ -34,7 +34,7 @@ class StartTemporalioWorkerTestCase(TestCase):
     def setUp(self):
         self.worker_run_mock = mock.AsyncMock()
         worker_patcher = mock.patch(
-            "django_temporalio.management.commands.start_temporalio_worker.Worker",
+            "django_temporalio.worker.Worker",
             return_value=mock.Mock(run=self.worker_run_mock),
         )
         self.worker_mock = worker_patcher.start()
@@ -42,14 +42,14 @@ class StartTemporalioWorkerTestCase(TestCase):
 
         self.client_mock = mock.Mock()
         init_client_patcher = mock.patch(
-            "django_temporalio.management.commands.start_temporalio_worker.init_client",
+            "django_temporalio.worker.init_client",
             return_value=self.client_mock,
         )
         init_client_patcher.start()
         self.addCleanup(init_client_patcher.stop)
 
         get_queue_registry_patcher = mock.patch(
-            "django_temporalio.management.commands.start_temporalio_worker.get_queue_registry",
+            "django_temporalio.worker.get_queue_registry",
             return_value={
                 "TEST_QUEUE_1": mock.MagicMock(
                     workflows=["workflow_1"],
@@ -95,7 +95,7 @@ class StartTemporalioWorkerTestCase(TestCase):
         self.worker_run_mock.assert_has_calls([mock.call(), mock.call()])
         self.assertEqual(
             self.stdout.getvalue(),
-            "Starting dev Temporal.io workers for queues: TEST_QUEUE_1, TEST_QUEUE_2\n"
+            "Starting Temporal.io workers: TEST_QUEUE_1, TEST_QUEUE_2\n"
             "(press ctrl-c to stop)...\n",
         )
 
@@ -115,8 +115,7 @@ class StartTemporalioWorkerTestCase(TestCase):
         self.worker_run_mock.assert_called_once()
         self.assertEqual(
             self.stdout.getvalue(),
-            "Starting 'worker_1' worker for 'TEST_QUEUE_1' queue\n"
-            "(press ctrl-c to stop)...\n",
+            "Starting Temporal.io workers: worker_1\n(press ctrl-c to stop)...\n",
         )
 
     def test_interceptors_from_settings(self):
@@ -183,6 +182,25 @@ class StartTemporalioWorkerTestCase(TestCase):
             str(cm.exception),
             r"Error: argument worker_name: invalid choice: '?worker_3'? "
             r"\(choose from '?worker_1'?, '?worker_2'?\)",
+        )
+
+    def test_start_worker_without_registered_queue(self):
+        """
+        Test that a worker whose queue has no registered activities/workflows
+        fails with a CommandError.
+        """
+        worker_configs = {"worker_3": WorkerConfig(task_queue="MISSING_QUEUE")}
+
+        with (
+            override_settings(**{SETTINGS_KEY: {"WORKER_CONFIGS": worker_configs}}),
+            self.assertRaises(CommandError) as cm,
+        ):
+            call_command("start_temporalio_worker", "worker_3", stdout=self.stdout)
+
+        self.worker_mock.assert_not_called()
+        self.assertIn(
+            "No activities/workflows registered for queue 'MISSING_QUEUE'",
+            str(cm.exception),
         )
 
     def test_no_arguments(self):

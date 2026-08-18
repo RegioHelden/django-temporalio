@@ -24,6 +24,7 @@ DEFAULTS = {
     "WORKER_CONFIGS": {},
     "BASE_MODULE": None,
     "INTERCEPTORS": (),
+    "WORKER_RUNNER": "django_temporalio.worker.WorkerRunner",
     "ACTIVITY_FAILURE_LOG_ATTEMPTS": (1, 10, 100, 1000),
     "ACTIVITY_FAILURE_LOG_EVERY": 1000,
 }
