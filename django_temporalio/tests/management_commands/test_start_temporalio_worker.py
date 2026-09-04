@@ -180,7 +180,7 @@ class StartTemporalioWorkerTestCase(TestCase):
         # use regex due to different error messages in different Python versions
         self.assertRegex(
             str(cm.exception),
-            r"Error: argument worker_name: invalid choice: '?worker_3'? ",
+            r"Error: argument worker_name: invalid choice: '?worker_3'?",
         )
         self.assertRegex(
             str(cm.exception),
