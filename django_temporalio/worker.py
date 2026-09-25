@@ -72,7 +72,9 @@ class WorkerRunner:
 
     def _get_configs(self, *names):
         if names:
-            return {name: settings.WORKER_CONFIGS[name] for name in names}
+            return {
+                name: WorkerConfig(**settings.WORKER_CONFIGS[name]) for name in names
+            }
         return {queue: WorkerConfig(task_queue=queue) for queue in self.queue_registry}
 
     def _build_worker(self, name, config: WorkerConfig) -> Worker:

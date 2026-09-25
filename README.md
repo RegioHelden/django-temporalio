@@ -45,6 +45,9 @@ DJANGO_TEMPORALIO = {
             task_queue="MAIN_TASK_QUEUE",
             ...
         ),
+        "secondary": {
+            "task_queue": "SECONDARY_TASK_QUEUE",
+        },
         ...
     },
 }
@@ -248,7 +251,7 @@ DJANGO_TEMPORALIO: A dictionary containing the following keys:
 - CLIENT_CONFIG: A dictionary of kwargs that are passed to the `temporalio.client.Client.connect` 
   method on the client initialization, defaults to `{}`
 - WORKER_CONFIGS: A dictionary containing worker configurations. 
-  The key is the worker name and the value is a `temporalio.worker.WorkerConfig` instance.
+  The key is the worker name and the value is a `temporalio.worker.WorkerConfig` instance or a dict with kwargs to `temporalio.worker.WorkerConfig`.
 - BASE_MODULE: A python module that holds workflows, activities and schedules, defaults to `None`
 - INTERCEPTORS: A list of import strings of `temporalio.worker.Interceptor` classes workers are 
   started with, defaults to `()`
