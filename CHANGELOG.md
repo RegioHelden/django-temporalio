@@ -1,5 +1,38 @@
 # Changelog
 
+## [v4.0.0](https://github.com/RegioHelden/django-temporalio/tree/v4.0.0) (2026-10-21)
+
+[Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v3.1.0...v4.0.0)
+
+**Breaking changes:**
+
+- Drop support for Django 4.2, use Python 3.13 on devcontainer and tests [\#187](https://github.com/RegioHelden/django-temporalio/pull/187) (@regiohelden-dev)
+
+**Implemented enhancements:**
+
+- Support plain dict for worker config [\#196](https://github.com/RegioHelden/django-temporalio/pull/196) (@lociii)
+
+**Merged pull requests:**
+
+- Infrastructure updates 2026-10-21 [\#201](https://github.com/RegioHelden/django-temporalio/pull/201) (@regiohelden-dev)
+- Update astral-sh/setup-uv action to v10.3.0 [\#200](https://github.com/RegioHelden/django-temporalio/pull/200) (@renovate[bot])
+- Update dependency Django to v6.1.2 [\#199](https://github.com/RegioHelden/django-temporalio/pull/199) (@renovate[bot])
+- Update VSCode common-utils to 2.7.0, ruff to 0.16.10, ty VSCode to 2026.76.0 and uv to 0.12.23 [\#198](https://github.com/RegioHelden/django-temporalio/pull/198) (@regiohelden-dev)
+- Update dependency temporalio to v1.34.0 [\#197](https://github.com/RegioHelden/django-temporalio/pull/197) (@renovate[bot])
+- Update devcontainers/common-utils to 2.6.0, ruff to 0.16.9, ruff VSCode to 2026.84.0, ty to 0.0.84, ty VSCode to 2026.74.0, setup-uv to 10.2.0 and uv to 0.12.19 [\#194](https://github.com/RegioHelden/django-temporalio/pull/194) (@regiohelden-dev)
+- Update astral-sh/setup-uv action to v10.2.0 [\#193](https://github.com/RegioHelden/django-temporalio/pull/193) (@renovate[bot])
+- Update dependency ubuntu to v26 [\#192](https://github.com/RegioHelden/django-temporalio/pull/192) (@renovate[bot])
+- Update ruff to 0.16.7, ruff VSCode to 2026.80.0, ty to 0.0.81, uv to 0.12.14 and setup-uv to 10.1.0 [\#191](https://github.com/RegioHelden/django-temporalio/pull/191) (@regiohelden-dev)
+- Update dependency temporalio to v1.33.0 [\#190](https://github.com/RegioHelden/django-temporalio/pull/190) (@renovate[bot])
+- Update astral-sh/setup-uv action to v10.1.0 [\#189](https://github.com/RegioHelden/django-temporalio/pull/189) (@renovate[bot])
+- Update ruff to 0.16.6, ruff VSCode to 2026.78.0 and uv to 0.12.10 [\#188](https://github.com/RegioHelden/django-temporalio/pull/188) (@regiohelden-dev)
+- Add tests for Django 6.1 [\#186](https://github.com/RegioHelden/django-temporalio/pull/186) (@lociii)
+- Update ruff to 0.16.5, ruff VSCode to 2026.76.0, ty to 0.0.78, ty VSCode to 2026.70.0, action setup-uv to 10.0.1 and uv to 0.12.9 [\#185](https://github.com/RegioHelden/django-temporalio/pull/185) (@regiohelden-dev)
+- Update dependency temporalio to v1.32.0 [\#184](https://github.com/RegioHelden/django-temporalio/pull/184) (@renovate[bot])
+- Update astral-sh/setup-uv action to v10 [\#178](https://github.com/RegioHelden/django-temporalio/pull/178) (@renovate[bot])
+- Update dependency setuptools to v84 [\#175](https://github.com/RegioHelden/django-temporalio/pull/175) (@renovate[bot])
+- Update dependency Django to v6.1.1 [\#174](https://github.com/RegioHelden/django-temporalio/pull/174) (@renovate[bot])
+
 ## [v3.1.0](https://github.com/RegioHelden/django-temporalio/tree/v3.1.0) (2026-08-18)
 
 [Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v3.0.0...v3.1.0)
