@@ -53,15 +53,15 @@ def autodiscover_modules(related_name_pattern: str):
 
 @asynccontextmanager
 async def heartbeat(interval: timedelta):
-    stop = asyncio.Event()
-
     async def _heartbeat_loop():
-        while not stop.is_set():
+        while True:
             activity.heartbeat()
-            await asyncio.sleep(interval.seconds)
+            await asyncio.sleep(interval.total_seconds())
 
+    heartbeat_task = asyncio.create_task(_heartbeat_loop())
     try:
         yield
     finally:
-        stop.set()
-        await asyncio.create_task(_heartbeat_loop())
+        heartbeat_task.cancel()
+        # unlike await, wait never raises the task's CancelledError
+        await asyncio.wait([heartbeat_task])
