@@ -11,6 +11,8 @@ A small Django app that provides helpers for integrating [Temporal.io](https://t
   with the full traceback, so errors in endlessly retried activities surface in your error tracking 
   instead of only in the Temporal UI, plus a logging filter to throttle the SDK's own per-attempt 
   failure records.
+- Activity Isolation: An opt-in worker interceptor that runs each activity like a Django request, 
+  so concurrent async activities query the database in parallel and stale connections are dropped.
 
 ## Installation
 
@@ -200,6 +202,54 @@ LOGGING = {
 
 Records that are not activity failures pass through untouched; the filter identifies them by the 
 `__temporal_error_identifier` marker the SDK sets on its failure records.
+
+### Activity Isolation
+
+Django's async ORM (`aget`, `asave`, ...) and other async Django APIs (`cache.aget`, ...) run the 
+sync code via `sync_to_async`, which sends every call to one shared thread unless a unit of work 
+is marked. Django's ASGI handler marks each request; a Temporal worker marks nothing, so concurrent 
+async activities run their database queries one after another. Connections are also never checked 
+between activities, so a broken one (e.g. after a database outage) stays in use until the worker 
+restarts.
+
+`ActivityIsolationInterceptor` runs each activity the way Django runs a request:
+
+- async activities get their own thread for sync Django calls, so their queries run concurrently; 
+  the thread's database connections and caches are closed when the activity ends
+- sync activities run in reused executor threads, refreshed before and after each run: unusable or 
+  expired connections (per `CONN_MAX_AGE`) are dropped, caches closed and the `DEBUG` query log 
+  reset; sync activities on a process pool executor are left untouched
+
+```python
+DJANGO_TEMPORALIO = {
+    ...
+    "INTERCEPTORS": [
+        "django_temporalio.interceptors.ActivityIsolationInterceptor",
+        "django_temporalio.logs.ActivityFailureLoggingInterceptor",
+    ],
+}
+```
+
+List it first, so the interceptors after it also use the activity's own thread and connections.
+
+Each running async activity that touches the database holds its own connection, so up to 
+`max_concurrent_activities` per worker. Use Django's connection pool 
+(`"OPTIONS": {"pool": {"max_size": ...}}` on PostgreSQL) to cap them, or size the database's 
+`max_connections` accordingly.
+
+To release further per-thread resources, subclass the interceptor, extend 
+`release_discarded_thread` (async activities) or `refresh_reused_thread` (sync activities) and 
+point the `INTERCEPTORS` setting to your class:
+
+```python
+from django_temporalio.interceptors import ActivityIsolationInterceptor
+
+
+class MyInterceptor(ActivityIsolationInterceptor):
+    def release_discarded_thread(self):
+        super().release_discarded_thread()
+        close_my_thread_local_resources()
+```
 
 ### Management Commands
 
