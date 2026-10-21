@@ -1,5 +1,17 @@
 # Changelog
 
+## [v4.1.0](https://github.com/RegioHelden/django-temporalio/tree/v4.1.0) (2026-10-21)
+
+[Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v4.0.0...v4.1.0)
+
+**Implemented enhancements:**
+
+- feat: add activity isolation interceptor [\#204](https://github.com/RegioHelden/django-temporalio/pull/204) (@bodja)
+
+**Fixed bugs:**
+
+- fix: send heartbeats while the context manager body runs [\#205](https://github.com/RegioHelden/django-temporalio/pull/205) (@bodja)
+
 ## [v4.0.0](https://github.com/RegioHelden/django-temporalio/tree/v4.0.0) (2026-10-21)
 
 [Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v3.1.0...v4.0.0)
