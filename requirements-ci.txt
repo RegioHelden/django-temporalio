@@ -1,2 +1,2 @@
-asgiref==3.12.1  # per-activity threads in ActivityIsolationInterceptor
+asgiref==3.13.0  # per-activity threads in ActivityIsolationInterceptor
 temporalio==1.34.0
