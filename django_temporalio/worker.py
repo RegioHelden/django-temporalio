@@ -39,7 +39,7 @@ class WorkerRunner:
     async def start(self, *names):
         """
         Run the workers declared under `names` in the WORKER_CONFIGS setting;
-        without names, run a worker per queue registered in the registry.
+        without names, run all of them.
         """
         await self._init_start()
         configs = self._get_configs(*names)
@@ -70,12 +70,11 @@ class WorkerRunner:
         finally:
             self._remove_signal_handlers()
 
-    def _get_configs(self, *names):
-        if names:
-            return {
-                name: WorkerConfig(**settings.WORKER_CONFIGS[name]) for name in names
-            }
-        return {queue: WorkerConfig(task_queue=queue) for queue in self.queue_registry}
+    def _get_configs(self, *names) -> dict[str, WorkerConfig]:
+        if not settings.WORKER_CONFIGS:
+            raise WorkerStartError("No workers defined in the WORKER_CONFIGS setting.")
+        names = names or settings.WORKER_CONFIGS.keys()
+        return {name: WorkerConfig(**settings.WORKER_CONFIGS[name]) for name in names}
 
     def _build_worker(self, name, config: WorkerConfig) -> Worker:
         config = dict(config)
