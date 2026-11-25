@@ -1,6 +1,29 @@
 # Changelog
 
-## [v4.1.0](https://github.com/RegioHelden/django-temporalio/tree/v4.1.0) (2026-10-21)
+## [v5.0.0](https://github.com/RegioHelden/django-temporalio/tree/v5.0.0) (2026-11-25)
+
+[Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v4.1.0...v5.0.0)
+
+**Breaking changes:**
+
+- feat: start\_temporalio\_worker defaults to starting all workers defined in WORKER\_CONFIGS, refs \#221 [\#222](https://github.com/RegioHelden/django-temporalio/pull/222) (@stefan-cardnell-rh)
+
+**Implemented enhancements:**
+
+- Add asgiref dependency to .sync.yml [\#210](https://github.com/RegioHelden/django-temporalio/pull/210) (@lociii)
+
+**Merged pull requests:**
+
+- Update dependency Django to v6.1.3 [\#217](https://github.com/RegioHelden/django-temporalio/pull/217) (@renovate[bot])
+- Update dependency temporalio to v1.36.0 [\#216](https://github.com/RegioHelden/django-temporalio/pull/216) (@renovate[bot])
+- Updates from modulesync [\#215](https://github.com/RegioHelden/django-temporalio/pull/215) (@regiohelden-dev)
+- Update dependency asgiref to v3.13.0 [\#214](https://github.com/RegioHelden/django-temporalio/pull/214) (@renovate[bot])
+- Update actions/setup-python action to v7.1.0 [\#213](https://github.com/RegioHelden/django-temporalio/pull/213) (@renovate[bot])
+- Update astral-sh/setup-uv action to v10.3.3 [\#212](https://github.com/RegioHelden/django-temporalio/pull/212) (@renovate[bot])
+- Infrastructure updates 2026-10-22 [\#211](https://github.com/RegioHelden/django-temporalio/pull/211) (@regiohelden-dev)
+- Update dependency setuptools to v84.2.1 [\#208](https://github.com/RegioHelden/django-temporalio/pull/208) (@renovate[bot])
+
+## [v4.1.0](https://github.com/RegioHelden/django-temporalio/tree/v4.1.0) (2026-10-22)
 
 [Full Changelog](https://github.com/RegioHelden/django-temporalio/compare/v4.0.0...v4.1.0)
 
@@ -11,6 +34,10 @@
 **Fixed bugs:**
 
 - fix: send heartbeats while the context manager body runs [\#205](https://github.com/RegioHelden/django-temporalio/pull/205) (@bodja)
+
+**Merged pull requests:**
+
+- Update astral-sh/setup-uv action to v10.3.1 [\#207](https://github.com/RegioHelden/django-temporalio/pull/207) (@renovate[bot])
 
 ## [v4.0.0](https://github.com/RegioHelden/django-temporalio/tree/v4.0.0) (2026-10-21)
 
