@@ -67,17 +67,27 @@ class StartTemporalioWorkerTestCase(TestCase):
         self.stdout = StringIO()
         self.addCleanup(self.stdout.close)
 
-    def test_flag_all(self):
+    def test_start_all_workers(self):
         """
-        Test command execution with --all flag.
+        Test that omitting the worker name starts every configured worker.
         """
-        call_command("start_temporalio_worker", all=True, stdout=self.stdout)
+        worker_configs = {
+            "worker_1": WorkerConfig(
+                task_queue="TEST_QUEUE_1",
+                max_concurrent_activities=5,
+            ),
+            "worker_2": {"task_queue": "TEST_QUEUE_2"},
+        }
+
+        with override_settings(**{SETTINGS_KEY: {"WORKER_CONFIGS": worker_configs}}):
+            call_command("start_temporalio_worker", stdout=self.stdout)
 
         self.worker_mock.assert_has_calls(
             [
                 mock.call(
                     self.client_mock,
                     task_queue="TEST_QUEUE_1",
+                    max_concurrent_activities=5,
                     workflows=["workflow_1"],
                     activities=["activity_1"],
                     interceptors=[],
@@ -92,11 +102,26 @@ class StartTemporalioWorkerTestCase(TestCase):
             ],
             any_order=True,
         )
-        self.worker_run_mock.assert_has_calls([mock.call(), mock.call()])
         self.assertEqual(
             self.stdout.getvalue(),
-            "Starting Temporal.io workers: TEST_QUEUE_1, TEST_QUEUE_2\n"
+            "Starting Temporal.io workers: worker_1, worker_2\n"
             "(press ctrl-c to stop)...\n",
+        )
+
+    def test_start_all_without_worker_configs(self):
+        """
+        Test that omitting the worker name fails when WORKER_CONFIGS is empty.
+        """
+        with (
+            override_settings(**{SETTINGS_KEY: {"WORKER_CONFIGS": {}}}),
+            self.assertRaises(CommandError) as cm,
+        ):
+            call_command("start_temporalio_worker", stdout=self.stdout)
+
+        self.worker_mock.assert_not_called()
+        self.assertEqual(
+            str(cm.exception),
+            "No workers defined in the WORKER_CONFIGS setting.",
         )
 
     def test_start_worker(self):
@@ -204,17 +229,4 @@ class StartTemporalioWorkerTestCase(TestCase):
         self.assertIn(
             "No activities/workflows registered for queue 'MISSING_QUEUE'",
             str(cm.exception),
-        )
-
-    def test_no_arguments(self):
-        """
-        Test that an error is raised when no arguments are provided.
-        """
-        with self.assertRaises(SystemExit):
-            call_command("start_temporalio_worker", stderr=self.stdout)
-
-        self.worker_mock.assert_not_called()
-        self.assertEqual(
-            self.stdout.getvalue(),
-            "You must provide either a worker name or --all flag.\n",
         )

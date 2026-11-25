@@ -259,16 +259,16 @@ To see a queue's registered activities and workflows:
 $ ./manage.py show_temporalio_queue_registry
 ```
 
-To start a worker defined in the settings (for production):
+To start a worker defined in the settings:
 
 ```bash
 $ ./manage.py start_temporalio_worker <worker_name>
 ```
 
-To start a worker for development (starts a worker for each registered queue, WORKER_CONFIGS setting is ignored):
+To start every worker defined in the settings, omit the worker name:
 
 ```bash
-$ ./manage.py start_temporalio_worker --all
+$ ./manage.py start_temporalio_worker
 ```
 
 The first SIGINT/SIGTERM triggers a graceful shutdown: the worker stops polling and waits for running
